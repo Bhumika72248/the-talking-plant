@@ -123,7 +123,7 @@ class AdvancedSensorSimulator {
     let moisture = this.baseValues.soilMoisture + this.trends.soilMoisture;
     
     // Weather effects
-    if (weather === weatherEffects.rainy) {
+    if (this.weatherPattern === 'rainy') {
       moisture += Math.random() * 15; // Rain adds moisture
     }
     
