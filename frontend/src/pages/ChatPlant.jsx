@@ -26,45 +26,65 @@ const ChatPlant = () => {
     fetchPlantStatus();
   }, []);
 
-  const generatePlantResponse = (userMessage) => {
-    const responses = {
-      water: "Thanks for asking! My soil moisture is at " + (currentReading?.soilMoisture || 60) + "%. " + 
-             (currentReading?.soilMoisture < 40 ? "I could use some water!" : "I'm well hydrated!"),
-      temperature: "The temperature around me is " + (currentReading?.temperature || 25) + "°C. " +
-                  (currentReading?.temperature > 30 ? "It's getting warm!" : "Perfect temperature!"),
-      light: "I'm getting " + (currentReading?.lightIntensity || 500) + " lux of light. " +
-            (currentReading?.lightIntensity < 300 ? "Could use more sunshine!" : "Great lighting!"),
-      mood: currentReading?.message || "I'm feeling great today!",
-      default: [
-        "That's interesting! Tell me more about your day.",
-        "I love chatting with you! How can I help?",
-        "As a plant, I find human conversations fascinating!",
-        "Thanks for talking to me. It helps me grow!"
-      ]
-    };
-
-    const message = userMessage.toLowerCase();
-    if (message.includes('water') || message.includes('thirsty')) return responses.water;
-    if (message.includes('temperature') || message.includes('hot') || message.includes('cold')) return responses.temperature;
-    if (message.includes('light') || message.includes('sun')) return responses.light;
-    if (message.includes('how') && message.includes('feel')) return responses.mood;
-    
-    return responses.default[Math.floor(Math.random() * responses.default.length)];
+  const generatePlantResponse = async (userMessage) => {
+    try {
+      const response = await fetch('http://localhost:3001/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: userMessage,
+          plantData: currentReading
+        })
+      });
+      
+      const data = await response.json();
+      return data.response;
+    } catch (error) {
+      console.error('Chat API Error:', error);
+      // Fallback response
+      return "I'm having trouble thinking right now. Maybe I need more sunlight? ☀️";
+    }
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim()) return;
     
     const userMessage = { sender: "You", text: input, timestamp: new Date().toLocaleTimeString() };
-    const plantReply = {
-      sender: "Plant",
-      text: `🌿 ${generatePlantResponse(input)}`,
-      timestamp: new Date().toLocaleTimeString()
-    };
+    setMessages(prev => [...prev, userMessage]);
     
-    setMessages(prev => [...prev, userMessage, plantReply]);
-    speakMessage(plantReply.text);
+    // Show typing indicator
+    const typingMessage = {
+      sender: "Plant",
+      text: "🌿 Thinking...",
+      timestamp: new Date().toLocaleTimeString(),
+      isTyping: true
+    };
+    setMessages(prev => [...prev, typingMessage]);
+    
+    const currentInput = input;
     setInput("");
+    
+    try {
+      const aiResponse = await generatePlantResponse(currentInput);
+      const plantReply = {
+        sender: "Plant",
+        text: `🌿 ${aiResponse}`,
+        timestamp: new Date().toLocaleTimeString()
+      };
+      
+      // Remove typing indicator and add real response
+      setMessages(prev => prev.filter(msg => !msg.isTyping).concat(plantReply));
+      speakMessage(plantReply.text);
+    } catch (error) {
+      // Remove typing indicator and show error
+      setMessages(prev => prev.filter(msg => !msg.isTyping).concat({
+        sender: "Plant",
+        text: "🌿 Sorry, I'm having trouble thinking right now! 🌱",
+        timestamp: new Date().toLocaleTimeString()
+      }));
+    }
   };
 
   return (

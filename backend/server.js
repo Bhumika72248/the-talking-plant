@@ -3,6 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const sensorRoutes = require('./routes/sensorRoutes');
+const chatRoutes = require('./routes/chatRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -13,6 +14,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/sensors', sensorRoutes);
+app.use('/api', chatRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
