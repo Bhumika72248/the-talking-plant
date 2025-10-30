@@ -28,7 +28,7 @@ const ChatPlant = () => {
 
   const generatePlantResponse = async (userMessage) => {
     try {
-      const response = await fetch('http://localhost:3001/api/chat', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
