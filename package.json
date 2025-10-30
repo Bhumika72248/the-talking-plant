@@ -1,0 +1,17 @@
+{
+  "name": "talking-plant-prototype",
+  "version": "1.0.0",
+  "description": "AI-powered plant monitoring system with simulated IoT sensors",
+  "scripts": {
+    "install-all": "cd backend && npm install && cd ../frontend && npm install",
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
+    "start": "concurrently \"cd backend && npm start\" \"cd frontend && npm run preview\"",
+    "build": "cd frontend && npm run build"
+  },
+  "keywords": ["iot", "plant", "ai", "sensors", "react", "nodejs"],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
