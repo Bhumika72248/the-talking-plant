@@ -68,16 +68,16 @@
     background-size: 400% 400%;
   }
   
-  .neon-text {
+   .neon-text {
     @apply text-neon-green font-cyber font-bold;
     color: #39ff14;
-    text-shadow: 
+    /* text-shadow: 
       0 0 5px #39ff14,
       0 0 10px #39ff14,
       0 0 15px #39ff14,
       0 0 20px #39ff14,
-      0 0 35px #39ff14;
-  }
+      0 0 35px #39ff14; */
+  } 
   
   .matrix-bg {
     position: fixed;
